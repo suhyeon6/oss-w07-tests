@@ -12,9 +12,14 @@ if [[ -e "$out" ]]; then
 fi
 mkdir -p -- "$out" || exit 2
 # Review scope: processing and final status below.
+failed=0
 for input in "$@"; do
     name=$(basename -- "$input")
-    ./bin/image-lab "$input" "$out/$name.png" gray
-    printf 'DONE %s\n' "$input"
+    if ./bin/image-lab "$input" "$out/$name.png" gray; then
+        printf 'DONE %s\n' "$input"
+    else
+        printf 'FAILED %s\n' "$input" >&2
+        failed=1
+    fi
 done
-exit 0
+exit "$failed"
